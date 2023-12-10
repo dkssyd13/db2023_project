@@ -24,7 +24,7 @@
             <DropShadow />
          </effect>
       </ListView>
-      <Button fx:id="startButton" layoutX="76.0" layoutY="427.0" mnemonicParsing="false" style="-fx-background-color: #11ff00;" text="역학조사 시작">
+      <Button fx:id="startButton" layoutX="76.0" layoutY="427.0" mnemonicParsing="false" onAction="#startButtonOnAction" style="-fx-background-color: #11ff00;" text="역학조사 시작">
          <font>
             <Font size="24.0" />
          </font>

@@ -2,9 +2,11 @@ package com.example.db2023_project;
 
 import com.example.db2023_project.DB.Database;
 import com.example.db2023_project.DB.Model.Inpatient;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
@@ -23,6 +25,8 @@ public class InpatientListController implements Initializable {
 
     @FXML
     private ListView<String> inpatientsListView;
+    @FXML
+    private Button startButton;
 
     private List<Inpatient> inpatients = new ArrayList<Inpatient>();
 
@@ -135,4 +139,13 @@ public class InpatientListController implements Initializable {
         }
 
     }
+
+    public void startButtonOnAction(ActionEvent e){
+        for (Inpatient selectedInpatient : selectedInpatients) {
+            System.out.println("selectedInpatient.getPersonId() = " + selectedInpatient.getPersonId());
+            System.out.println("selectedInpatient.getInpatientId() = " + selectedInpatient.getInpatientId());
+            System.out.println("selectedInpatient.getName() = " + selectedInpatient.getName());
+        }
+    }
+
 }
