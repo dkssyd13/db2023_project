@@ -1,0 +1,14 @@
+# Host name
+host=localhost
+
+#Port
+port=3306
+
+#Database name
+database=db2023_project
+
+#Username
+username=root
+
+#Password for user
+password=1301
