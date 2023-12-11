@@ -1,24 +1,23 @@
 package com.example.db2023_project;
 
 import com.example.db2023_project.DB.Database;
-import com.example.db2023_project.DB.Model.Inpatient;
+import com.example.db2023_project.Model.Inpatient;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
+import java.util.*;
 
 
 public class InpatientListController implements Initializable {
@@ -30,13 +29,23 @@ public class InpatientListController implements Initializable {
     * */
 
     @FXML
-    private ListView<String> inpatientsListView;
+    private TableView<Inpatient> inpatientsTableView;
+
+    @FXML
+    private TableColumn<Inpatient, String> nameColumn;
+
+    @FXML
+    private TableColumn<Inpatient, Long> roomIdColumn;
+
+    @FXML
+    private TableColumn<Inpatient, Long> secIdColumn;
+
     @FXML
     private Button startButton;
 
     private List<Inpatient> inpatients = new ArrayList<Inpatient>();
 
-    private List<Inpatient> selectedInpatients = new ArrayList<Inpatient>();
+    private Set<Inpatient> selectedInpatients = new HashSet<Inpatient>();
 
 
     @Override
@@ -44,34 +53,62 @@ public class InpatientListController implements Initializable {
         Database db = Database.getDb();
         Connection connection = db.getConnection();
 
+        nameColumn.setCellValueFactory(new PropertyValueFactory<Inpatient, String>("name"));
+        secIdColumn.setCellValueFactory(new PropertyValueFactory<Inpatient, Long>("secId"));
+        roomIdColumn.setCellValueFactory(new PropertyValueFactory<Inpatient, Long>("roomId"));
+        inpatientsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        inpatientsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
 
-                int selectedIndex = inpatientsListView.getSelectionModel().getSelectedIndex();
-                System.out.println("Clicked on item index: " + selectedIndex);
 
-                // 선택된 inpatient를 찾음
-                Inpatient selectedInpatient = inpatients.get(selectedIndex);
+//        inpatientsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent mouseEvent) {
+//
+//                int selectedIndex = inpatientsListView.getSelectionModel().getSelectedIndex();
+//                System.out.println("Clicked on item index: " + selectedIndex);
+//
+//                // 선택된 inpatient를 찾음
+//                Inpatient selectedInpatient = inpatients.get(selectedIndex);
+//
+//                // ListView에서 아이템 텍스트 확인
+//                String listItem = inpatientsListView.getItems().get(selectedIndex);
+//
+//                if (listItem.endsWith(" (선택됨)")) {
+//                    // 이미 선택된 아이템이면 '선택됨' 표시 제거하고 selectedInpatients에서 제거
+//                    listItem = listItem.substring(0, listItem.length() - " (선택됨)".length());
+//                    selectedInpatients.remove(selectedInpatient);
+//                } else {
+//                    // 아직 선택되지 않은 아이템이면 '선택됨' 표시 추가하고 selectedInpatients에 추가
+//                    listItem += " (선택됨)";
+//                    selectedInpatients.add(selectedInpatient);
+//                }
+//
+//                // ListView에서 아이템 텍스트 변경
+//                inpatientsListView.getItems().set(selectedIndex, listItem);
+//            }
+//        });
 
-                // ListView에서 아이템 텍스트 확인
-                String listItem = inpatientsListView.getItems().get(selectedIndex);
-
-                if (listItem.endsWith(" (선택됨)")) {
-                    // 이미 선택된 아이템이면 '선택됨' 표시 제거하고 selectedInpatients에서 제거
-                    listItem = listItem.substring(0, listItem.length() - " (선택됨)".length());
-                    selectedInpatients.remove(selectedInpatient);
-                } else {
-                    // 아직 선택되지 않은 아이템이면 '선택됨' 표시 추가하고 selectedInpatients에 추가
-                    listItem += " (선택됨)";
-                    selectedInpatients.add(selectedInpatient);
+        inpatientsTableView.setRowFactory(tv -> {
+                    TableRow<Inpatient> row = new TableRow<>();
+                    row.setOnMouseClicked(mouseEvent -> {
+                        if(!row.isEmpty() && mouseEvent.getButton()== MouseButton.PRIMARY){
+                            Inpatient clickedRow = row.getItem();
+                            if(mouseEvent.getClickCount()==1){
+                                //한번 클릭하면 배경이 초록색으로 바뀌고, 선택된 inpatients리스트에 넣는다
+                                row.setStyle("-fx-background-color: green;");
+                                selectedInpatients.add(clickedRow);
+                                System.out.println("selectedInpatients.size() = " + selectedInpatients.size());
+                            }else if(mouseEvent.getClickCount()==2){
+                                //두번 클릭하면 배경이 원래 색으로 돌아오고, set(selectedInpatients)에서 삭제
+                                row.setStyle("");
+                                selectedInpatients.remove(clickedRow);
+                                System.out.println("selectedInpatients.size() = " + selectedInpatients.size());
+                            }
+                        }
+                    });
+                    return row;
                 }
-
-                // ListView에서 아이템 텍스트 변경
-                inpatientsListView.getItems().set(selectedIndex, listItem);
-            }
-        });
+                );
 
         /**
          * 쿼리 설명
@@ -112,8 +149,7 @@ public class InpatientListController implements Initializable {
                 String roomID = "0";// 현재 0으로 한 이유 db에 null값이 들어가 있어, 에러가 발생해서임.
                 String hgrisk = "0";// 현재 0으로 한 이유 db에 null값이 들어가 있어, 에러가 발생해서임.
 
-
-                inpatients.add(new Inpatient(
+                Inpatient inpatientToAdd= new Inpatient(
                         Long.parseLong(personId),
                         Long.parseLong(inpatientID),
                         name,
@@ -121,14 +157,17 @@ public class InpatientListController implements Initializable {
                         Long.parseLong(secID),
                         Long.parseLong(roomID),
                         Boolean.parseBoolean(hgrisk)
-                ));
+                );
+
+
+                inpatients.add(inpatientToAdd);
 
                 System.out.println("inpatients size = " + inpatients.size());
 
 
                 String listItem = count + ") " + name;
 
-                inpatientsListView.getItems().add(listItem);
+                inpatientsTableView.getItems().add(inpatientToAdd);
                 count++;
             }
 

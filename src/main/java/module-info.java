@@ -6,4 +6,5 @@ module com.example.db2023_project {
 
     opens com.example.db2023_project to javafx.fxml;
     exports com.example.db2023_project;
+    exports com.example.db2023_project.Model;
 }

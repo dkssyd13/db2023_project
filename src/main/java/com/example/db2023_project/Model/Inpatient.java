@@ -1,4 +1,4 @@
-package com.example.db2023_project.DB.Model;
+package com.example.db2023_project.Model;
 
 public class Inpatient {
     private Long personId;
