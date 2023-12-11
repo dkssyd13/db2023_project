@@ -132,10 +132,6 @@ public class InpatientListController implements Initializable {
                 count++;
             }
 
-            /*
-            * 역학 조사 시작
-            * */
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -143,6 +139,9 @@ public class InpatientListController implements Initializable {
     }
 
     public void startButtonOnAction(ActionEvent e){
+        /*
+         * 역학 조사 시작ㅎ
+         * */
         for (Inpatient selectedInpatient : selectedInpatients) {
             System.out.println("selectedInpatient.getPersonId() = " + selectedInpatient.getPersonId());
             System.out.println("selectedInpatient.getInpatientId() = " + selectedInpatient.getInpatientId());
