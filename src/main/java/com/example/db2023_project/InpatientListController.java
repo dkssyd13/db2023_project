@@ -22,6 +22,12 @@ import java.util.ResourceBundle;
 
 
 public class InpatientListController implements Initializable {
+    /*
+    * 현재 입원한 환자들의 List를 갖고 오는 컨트롤러.
+    * inpatientsListView : UI에 보여줄 String들의 리스트.
+    * inpatients : db에서 갖고온 정보를 바탕으로 inpatient객체들을 만들고 이 리스트에 저장.
+    * selectedInpatients : 사용자가 클릭(선택)한 환자들을 따로 담는 리스트.
+    * */
 
     @FXML
     private ListView<String> inpatientsListView;
@@ -42,10 +48,6 @@ public class InpatientListController implements Initializable {
         inpatientsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-//                int index = inpatientsListView.getSelectionModel().getSelectedIndex();
-//                System.out.println("클릭된 아이템의 인덱스 : " + index);
-//                System.out.println("list view 내의 name : " + inpatientsListView.getItems().get(index));
-//                System.out.println("inpatients List 내의 name : " + inpatients.get(index).getName());
 
                 int selectedIndex = inpatientsListView.getSelectionModel().getSelectedIndex();
                 System.out.println("Clicked on item index: " + selectedIndex);
@@ -56,13 +58,13 @@ public class InpatientListController implements Initializable {
                 // ListView에서 아이템 텍스트 확인
                 String listItem = inpatientsListView.getItems().get(selectedIndex);
 
-                if (listItem.endsWith(" (표시됨)")) {
-                    // 이미 표시된 아이템이면 '표시됨' 표시 제거하고 selectedInpatients에서 제거
-                    listItem = listItem.substring(0, listItem.length() - " (표시됨)".length());
+                if (listItem.endsWith(" (선택됨)")) {
+                    // 이미 선택된 아이템이면 '선택됨' 표시 제거하고 selectedInpatients에서 제거
+                    listItem = listItem.substring(0, listItem.length() - " (선택됨)".length());
                     selectedInpatients.remove(selectedInpatient);
                 } else {
-                    // 아직 표시되지 않은 아이템이면 '표시됨' 표시 추가하고 selectedInpatients에 추가
-                    listItem += " (표시됨)";
+                    // 아직 선택되지 않은 아이템이면 '선택됨' 표시 추가하고 selectedInpatients에 추가
+                    listItem += " (선택됨)";
                     selectedInpatients.add(selectedInpatient);
                 }
 
@@ -84,7 +86,7 @@ public class InpatientListController implements Initializable {
 //                "WHERE inpatient.endDate IS NULL;";
 
         /*
-        * 위 쿼리가 너무 보기 힘들어서, personID, inpatientID, personName 등 필요할것 같은 정보가 표시하도록 쿼리 수정
+        * 위 쿼리가 너무 보기 힘들어서, personID, inpatientID, personName 등 필요할것 같은 정보만 뽑도록 쿼리 수정
         * */
 
         String getInpatientListQuery = "SELECT person.personID, inpatient.inpatientID, person.personName, inpatient.diseaseID, inpatient.secID,inpatient.roomID,inpatient.hgrisk\n" +
@@ -103,12 +105,12 @@ public class InpatientListController implements Initializable {
                 String inpatientID = queryOutput.getString(2);
                 String name = queryOutput.getString(3);
 //                String diseaseID = queryOutput.getString(4);
-                String diseaseID = "0";
+                String diseaseID = "0"; // 현재 0으로 한 이유 db에 null값이 들어가 있어, 에러가 발생해서임.
 //                String secID = queryOutput.getString(5);
-                String secID = "0";
+                String secID = "0";// 현재 0으로 한 이유 db에 null값이 들어가 있어, 에러가 발생해서임.
 //                String roomID = queryOutput.getString(6);
-                String roomID = "0";
-                String hgrisk = "0";
+                String roomID = "0";// 현재 0으로 한 이유 db에 null값이 들어가 있어, 에러가 발생해서임.
+                String hgrisk = "0";// 현재 0으로 한 이유 db에 null값이 들어가 있어, 에러가 발생해서임.
 
 
                 inpatients.add(new Inpatient(
